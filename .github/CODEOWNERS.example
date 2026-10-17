@@ -1,0 +1,4 @@
+# Completar usuarios GitHub reales y renombrar a CODEOWNERS.
+# API: /src/modules/dev-a/ -> dev A; /src/modules/dev-c/ -> dev C
+# UI: /src/modules/dev-a/ -> dev A; /src/modules/dev-c/ -> dev C
+# /src/auth.js /src/database.js /src/calendar.js -> Líder Técnico
