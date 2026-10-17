@@ -102,3 +102,18 @@ equipo-routes.jsx permite agregar `{path,label,roles,element}`. Registro/login c
 Coincidencias = pares retazo/pedido registrados en avisos, sin duplicar canales. Reservas = registros históricos; retiros/descartes = estados del retazo. Promedios de calificaciones existentes por sucursal. Porcentaje retiros/cargados acumulado; no se interpreta como reducción medida del descarte sin base del negocio.
 
 La regla de bloquear reservas por feedback pendiente y las reglas de puntos del cliente siguen pendientes en la fuente; B no las inventa.
+
+## Fichas C implementadas: reservas y pago/retiro manual
+
+Código en `src/modules/dev-c/`. Errores `{error,message}`. Antes de cada operación C vence reservas atrasadas (no depende del cron) y emite `reserva.vencida`.
+
+| Verbo | Ruta | Rol | Notas |
+|---|---|---|---|
+| POST | /api/reservas | cliente | `{aviso_id}`; 201. 404 aviso ajeno; 409 `AVISO_YA_CONFIRMADO`, `AVISO_NO_VIGENTE`, `AVISO_VENCIDO`, `PEDIDO_NO_VIGENTE`, `RETAZO_NO_DISPONIBLE`, `RESERVA_ACTIVA_EXISTENTE`, `RESERVA_CONFLICTO`. Una transacción inmediata: reserva activa (vence a 12 h de atención), aviso confirmado, retazo reservado. No cobra. |
+| GET | /api/reservas, /api/reservas/:id | cliente | Solo propias, con retazo, sucursal y `pago_estado`. |
+| DELETE | /api/reservas/:id | cliente | Cancela y libera el retazo; emite `reserva.cancelada`. 409 `RESERVA_NO_ACTIVA` o `PAGO_REGISTRADO`. |
+| GET | /api/retiros, /api/retiros/:id | encargado | Reservas activas de su sucursal; 403 de otra sucursal. Incluye `monto_a_pagar`. |
+| POST | /api/pagos | encargado | `{reserva_id,medio:efectivo\|transferencia,comprobante,monto?}`; 201 pago aprobado por el precio del retazo (2 decimales). 400 `MONTO_INCORRECTO`; 409 `RESERVA_VENCIDA`, `PAGO_YA_REGISTRADO`. |
+| POST | /api/retiros/:id/concretar | encargado | Exige pago aprobado (409 `PAGO_REQUERIDO`). Reserva concretada, retazo retirado, pedido cumplido; emite `retiro.concretado` una sola vez (repetir devuelve `ya_concretado:true`). |
+
+Pendiente: `POST /api/pagos/mercadopago` y webhook (siguen en 501), feedback, reembolso si una reserva con pago vence, bloqueo por feedback pendiente.
