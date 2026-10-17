@@ -1,3 +1,5 @@
+> Documento histórico de la base B. Estado actual: INTEGRACION_20261017.md. Las referencias a A/C pendientes no describen el prototipo integrado.
+
 # Validación de la entrega del 16/10/2026
 
 Ejecutada en Linux, Node 24.19.0 y npm 11.9.0. No se afirma validación en las PC Windows del equipo ni en servidores DonWeb.

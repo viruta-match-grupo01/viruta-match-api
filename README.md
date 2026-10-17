@@ -1,10 +1,6 @@
-# Viruta Match API
+# Viruta Match API — prototipo integrado A/B/C
 
-Entrega del 16/10/2026: base compartida + Dev B (Ignacio). Repositorio independiente para `viruta-match-grupo01/viruta-match-api`.
-
-## Ejecutar desde Git Bash
-
-Node 24 (parche de referencia `.nvmrc`), npm. Ejecutar dentro de esta carpeta:
+Estado y pendientes: docs/INTEGRACION_20261017.md. Conserva la base B, integra ZIP A y rama cambios-chadma de C. Node 24 (.nvmrc), versiones fijadas en package-lock.json.
 
 ```bash
 npm ci
@@ -14,24 +10,14 @@ npm run db:seed
 npm run dev
 ```
 
-API: http://127.0.0.1:3001/health. SQLite se crea al migrar en `data/desarrollo.db`, con ruta absoluta impresa en consola. Cada desarrollador tiene su DB local. No copiar una DB compartida ni subirla a Git.
+API: http://127.0.0.1:3001/health. Para ensayo usar config/prototipo.env.example en lugar de .env.example; solamente en desarrollo. Cada PC crea su SQLite; nunca subirlo ni compartirlo como base de trabajo.
 
-Usuarios ficticios del seed: `usuario1@example.invalid` y `usuario2@example.invalid` clientes; `usuario3@example.invalid` dueño; `usuario4@example.invalid` operario; `usuario5@example.invalid` encargado. Contraseña de todos: `demo-local`. Usuarios/cargas son ficticios y seed no se permite en producción.
+Usuarios ficticios: usuario1@example.invalid y usuario2 (clientes), usuario3 (dueño), usuario4 (operario sucursal 1), usuario5 (encargado sucursal 1), todos con contraseña demo-local. Los correos completos terminan en @example.invalid.
 
-## Qué está implementado
-
-Sesión JWT en cookie httpOnly, bcrypt, conexión SQLite WAL, esquema común, reloj/calendario, bus y scheduler. Módulo B: pedidos (alta/lista/renovación/cancelación), matching con rotación y tolerancia de área, avisos por turnos, cola persistente con cupos/horarios/vencimientos/reconciliación, SMTP por adaptador y reportes de dueño.
-
-La configuración local captura avisos en memoria en vez de enviar correo; estados/cola/resultados por canal permanecen en SQLite. Captura es un adaptador de prueba, no evidencia de entrega a una casilla. `SMTP_*` + `NOTIFICATION_MODE=smtp` habilitan el adaptador real con credenciales del equipo; no se han enviado mensajes reales en esta entrega. WhatsApp real pendiente del chatbot: su falla cierta permite correo de respaldo. `ALLOW_DEMO=false` por defecto; herramientas de simulación solo opt-in local.
-
-No están implementados A ni C. Leer `src/modules/dev-a/README.md` y `src/modules/dev-c/README.md`. Las tablas compartidas y fixtures no sustituyen esos módulos. Confirmar reserva responde 501 hasta integrar C.
-
-## Contratos y pruebas
-
-`docs/ARRANQUE_EQUIPO.md` explica módulos/extensiones. `docs/CONTRATOS_EQUIPO.md` contiene rutas/eventos. `docs/ACUERDO_DESARROLLO.md` conserva el acuerdo 1.1 y `docs/DECISIONES_20261016.md` registra los ajustes de esta entrega.
+Flujo implementado: carga/precios/calidad/corrección → pedido/matching/aviso → reserva → pago manual/retiro → incentivos/reportes. Fotos ficticias, MercadoPago/feedback/cuentas públicas pendientes; detalle en el informe. Captura local de correos, sin envío real. ALLOW_DEMO=false por defecto; las herramientas requieren opt-in local y dueño. Producción rechaza demo/capture.
 
 ```bash
 npm run check
 ```
 
-Para producción se requieren credenciales, calendario confirmado, revisión de schema/migraciones y entornos/HTTPS; no desplegar datos ficticios. Nunca iniciar varias API sobre el mismo SQLite.
+Ejecutar db:migrate antes de iniciar o actualizar esta versión. No iniciar dos API sobre el mismo SQLite. No subir .env, node_modules, bases, fotos reales o credenciales. PR hacia desarrollo; validar en testing antes de producción.

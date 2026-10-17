@@ -1,3 +1,5 @@
+> Documento histórico de la base B. Estado actual: INTEGRACION_20261017.md. Las referencias a A/C pendientes no describen el prototipo integrado.
+
 # Arranque de los tres desarrolladores
 
 Ignacio no necesita terminar A/C ni esperar infraestructura para publicar esta base en desarrollo. Compartir ambos repositorios y esta misma entrega, no tres estructuras iniciales independientes.

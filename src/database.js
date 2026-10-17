@@ -28,6 +28,7 @@ export function createBaseSchema(db) {
     CREATE TABLE IF NOT EXISTS pago (id INTEGER PRIMARY KEY,reserva_id INTEGER NOT NULL REFERENCES reserva(id),medio TEXT NOT NULL CHECK(medio IN ('efectivo','transferencia','mercadopago')),monto REAL NOT NULL CHECK(monto>=0),estado TEXT NOT NULL CHECK(estado IN ('pendiente','aprobado','rechazado')),comprobante TEXT,mp_link TEXT,mp_pago_id TEXT,registrado_por INTEGER REFERENCES usuario(id),registrado_en TEXT);
     CREATE TABLE IF NOT EXISTS movimiento_puntos (id INTEGER PRIMARY KEY,cliente_id INTEGER NOT NULL REFERENCES usuario(id),reserva_id INTEGER NOT NULL REFERENCES reserva(id),puntos INTEGER NOT NULL,creado_en TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS incentivo (id INTEGER PRIMARY KEY,usuario_id INTEGER NOT NULL REFERENCES usuario(id),retazo_id INTEGER NOT NULL REFERENCES retazo(id),rol TEXT NOT NULL CHECK(rol IN ('operario','encargado')),porcentaje REAL NOT NULL,monto REAL NOT NULL, generado_en TEXT NOT NULL);
+    CREATE UNIQUE INDEX IF NOT EXISTS uq_incentivo_venta_rol ON incentivo(retazo_id,rol);
   `);
 }
 
