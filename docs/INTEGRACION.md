@@ -1,3 +1,3 @@
-# Integración v2
+# Integración actual
 
-Consultar CONTRATOS_EQUIPO.md y GUIA_EQUIPO.md. Esta versión usa dos repositorios independientes y ramas desarrollo/testing/main; reemplaza las instrucciones del monorepo v1.
+Leer INTEGRACION_20261017.md. Se conservan dos repositorios independientes y las ramas main, testing y desarrollo.

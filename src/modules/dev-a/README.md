@@ -1,3 +1,5 @@
+> Actualización 17/10: módulos integrados. Ver docs/INTEGRACION_20261017.md para implementación y pendientes; las instrucciones siguientes son antecedentes de cada módulo.
+
 # Dev A — Guido
 
 Agregar aquí carga, calidad, registro/roles completos y recompensas; no reemplazar la sesión ni el esquema compartido.

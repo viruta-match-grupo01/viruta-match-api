@@ -1,3 +1,5 @@
+> Documento histórico de la base B. Estado actual: INTEGRACION_20261017.md. Las referencias a A/C pendientes no describen el prototipo integrado.
+
 # Decisiones de la entrega del 16/10/2026
 
 Esta es una entrega autónoma de la base común y B, para comenzar sin recuperar el ZIP anterior. Reutiliza lógica B existente, revisada y probada de nuevo; agrega catálogos, componentes, integración de scheduler y tests actuales. No se atribuye aprobación a Román ni al dueño.

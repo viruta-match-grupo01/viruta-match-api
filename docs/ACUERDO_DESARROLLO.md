@@ -1,3 +1,5 @@
+> Estado actual del código: INTEGRACION_20261017.md. Acuerdo funcional conservado como fuente; las referencias históricas a entregas v2/base B no requieren recuperar esos ZIP ni reemplazar los módulos integrados.
+
 > Aplicación del 16/10/2026: esta entrega contiene el código base autónomo. No hace falta recuperar el ZIP v2 citado históricamente en este acuerdo. Leer primero DECISIONES_20261016.md para versiones y puntos de integración efectivos.
 
 # Viruta Match

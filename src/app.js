@@ -7,6 +7,7 @@ import {createAuth} from './auth.js';
 import {createCalendar} from './calendar.js';
 import {createCaptureChannel,createSmtpChannel,createUnavailableWhatsAppChannel} from './channels.js';
 import {createEquipoRouter,createEquipoTasks} from './modules/equipo.js';
+import {requireRole,requireUser} from './shared/http.js';
 
 export function createApp({db,config,bus=new EventEmitter(),clock:customClock,channels:customChannels,equipoRouterFactory=createEquipoRouter,equipoTasksFactory=createEquipoTasks}) {
   let offset=0;const clock=customClock??(()=>new Date(Date.now()+offset));
@@ -28,13 +29,14 @@ export function createApp({db,config,bus=new EventEmitter(),clock:customClock,ch
   app.use(cors({origin:(origin,callback)=>callback(null,!origin||config.uiOrigins.includes(origin)),credentials:true}));
   app.get('/health',(_req,res)=>res.json({ok:true,service:'viruta-match-api',mode:config.production?'production':'development'}));
   const auth=createAuth({db,config});app.use('/api',auth.authenticate);app.use('/api/auth',auth.router);
+  app.get('/api/entorno',requireUser,(_req,res)=>res.json({demo:config.allowDemo,ahora:clock().toISOString(),avisos:config.notificationMode}));
   if(config.allowDemo) {
-    app.use('/api/demo',(req,res,next)=>{if(!req.user)return res.status(401).json({error:'SESION_REQUERIDA',message:'Iniciá sesión'});next();});
+    app.use('/api/demo',requireRole('duenio'));
     app.get('/api/demo/estado',(_req,res)=>res.json({ahora:clock().toISOString(),retazos:db.prepare('SELECT * FROM retazo ORDER BY id').all(),capturados:capture.messages.length}));
     app.get('/api/demo/correos',(_req,res)=>res.json(capture.messages));
-    app.post('/api/demo/tick',async(_req,res)=>res.json(await b.tick()));
-    app.post('/api/demo/avanzar',async(req,res)=>{const m=Number(req.body.minutos);if(!Number.isFinite(m)||m<0||m>44640)return res.status(400).json({message:'Minutos entre 0 y 44640'});offset+=m*60000;await b.tick();res.json({ahora:clock().toISOString()});});
-    app.post('/api/demo/retazos/:id/aprobar',async(req,res)=>{const id=Number(req.params.id);db.prepare("UPDATE retazo SET estado='disponible' WHERE id=? AND estado='pendiente_control'").run(id);bus.emit('retazo.disponible',{retazoId:id});await b.tick();res.json({ok:true});});
+    app.post('/api/demo/tick',async(_req,res)=>res.json(await tick()));
+    app.post('/api/demo/avanzar',async(req,res)=>{const m=Number(req.body.minutos);if(!Number.isFinite(m)||m<0||m>44640)return res.status(400).json({error:'DATOS_INVALIDOS',message:'Minutos entre 0 y 44640'});if(customClock)return res.status(409).json({error:'RELOJ_INYECTADO',message:'El reloj está controlado por la prueba'});offset+=m*60000;await tick();res.json({ahora:clock().toISOString()});});
+    app.post('/api/demo/horario',async(_req,res)=>{if(customClock)return res.status(409).json({error:'RELOJ_INYECTADO',message:'El reloj está controlado por la prueba'});const now=clock();const target=calendar.nextDayOpen(now);target.setUTCHours(13,0,0,0);offset+=target.getTime()-now.getTime();await tick();res.json({ahora:clock().toISOString()});});
   }
   app.use('/api',equipoRouterFactory(context));
   app.use('/api',b.router);

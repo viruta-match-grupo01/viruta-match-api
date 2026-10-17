@@ -23,6 +23,6 @@ it('evento disponible de A genera un aviso en la misma transacción, y rollback 
  f.db.transaction(approve).immediate();expect(f.db.prepare('SELECT retazo_id FROM aviso').get().retazo_id).toBe(4);
 });
 it('C puede enchufar vencimientos antes del procesamiento de B',async()=>{let ran=false;const f=setup({equipoTasksFactory:context=>({async tick(){expect(context.calendar.addHours).toBeTypeOf('function');ran=true;}})});await f.tick();expect(ran).toBe(true);});
-it('no se declara una reserva exitosa sin el módulo C',async()=>{const f=setup();const agent=await login(f.app);const r=await agent.post('/api/reservas').send({aviso_id:1});expect(r.status).toBe(501);expect(r.body.error).toBe('MODULO_PENDIENTE');expect(f.db.prepare('SELECT COUNT(*) n FROM reserva').get().n).toBe(0);});
+it('no se declara un cobro de MercadoPago sin su contrato',async()=>{const f=setup();const agent=await login(f.app,5);const r=await agent.post('/api/pagos/mercadopago').send({reserva_id:1});expect(r.status).toBe(501);expect(r.body.error).toBe('MODULO_PENDIENTE');expect(f.db.prepare('SELECT COUNT(*) n FROM pago').get().n).toBe(0);});
 it('sin configuración explícita no expone controles de prueba',()=>{expect(readConfig({}).allowDemo).toBe(false);});
 it('identificadores y pertenencia de sucursal se validan en la base común',()=>{expect(()=>positiveId('1.5')).toThrow();expect(()=>positiveId('abc')).toThrow();expect(()=>requireBranch({sucursal_id:1},2)).toThrow();});
