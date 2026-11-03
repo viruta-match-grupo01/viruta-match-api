@@ -23,7 +23,7 @@ export const retazoSchema=z.object({
   alto_cm:medida('El alto'),ancho_cm:medida('El ancho'),
   color:z.enum(COLORS,{error:'Color fuera del catálogo'}).nullable().optional(),
   acabado:z.enum(FINISHES,{error:'Acabado no admitido'}).nullable().optional(),
-  foto_url:z.string({error:'La foto es obligatoria'}).refine(v=>FOTOS_PERMITIDAS.includes(v),'Foto no admitida'),
+  foto_url:z.string({error:'La foto es obligatoria'}).refine(v=>FOTOS_PERMITIDAS.includes(v)||/^\/api\/fotos\/[0-9a-f-]{36}\.(jpg|png|webp)$/.test(v),'Subí una foto JPG, PNG o WebP válida'),
   forma_retiro:z.string({error:'La forma de retiro es obligatoria'}).trim().min(3,'Indicá la forma de retiro').max(120,'La forma de retiro es demasiado larga')
 }).strict().superRefine(reglasMelamina);
 

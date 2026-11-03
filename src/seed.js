@@ -10,7 +10,7 @@ export function seedDemo(db,now=new Date()) {
     const hash=bcrypt.hashSync('demo-local',10);
     for(const [id,nombre,rol,sucursal] of users) db.prepare('INSERT INTO usuario(id,nombre,email,password_hash,rol,sucursal_id) VALUES(?,?,?,?,?,?)').run(id,nombre,`usuario${id}@example.invalid`,hash,rol,sucursal);
     for(const id of [1,2]) db.prepare('INSERT INTO perfil_cliente VALUES(?,?,?)').run(id,'estudiante','correo');
-    const retazos=[['MDF',18,40,66,null,null,1,3200,'disponible'],['MDF',18,60,40,null,null,1,2900,'disponible'],['melamina',18,50,80,'blanco','mate',2,8000,'disponible'],['MDF',18,40,60,null,null,1,2800,'pendiente_control'],['MDF',18,15,40,null,null,1,0,'descartado']];
+    const retazos=[['MDF',18,40,66,null,null,1,3200,'disponible'],['MDF',18,60,40,null,null,1,2900,'disponible'],['melamina',18,50,80,'blanco','mate',2,4640,'disponible'],['MDF',18,40,60,null,null,1,2800,'pendiente_control'],['MDF',18,15,40,null,null,1,0,'descartado']];
     retazos.forEach((r,i)=>db.prepare(`INSERT INTO retazo(id,material,espesor_mm,alto_cm,ancho_cm,color,acabado,sucursal_id,precio,estado,foto_url,forma_retiro,cargado_por,cargado_en) VALUES(?,?,?,?,?,?,?,?,?,?,?,'Retiro presencial en sucursal',4,?)`).run(i+1,...r,`/retazo-demo.svg`,new Date(now.getTime()-86400000+i*1000).toISOString()));
   }).immediate();
 }

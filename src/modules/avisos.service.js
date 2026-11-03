@@ -18,7 +18,7 @@ export function createAvisosService({db,clock,calendar,matching,channels,publicA
   function message(a) {
     const url=new URL(`/avisos/${a.id}`,publicAppUrl).toString();
     return {avisoId:a.id,email:a.email,telefono:a.telefono,subject:'Viruta Match: encontramos un retazo para tu pedido',
-      text:`Hola ${a.cliente_nombre}.\n${a.material}, ${a.espesor_mm} mm; ${a.alto_cm} × ${a.ancho_cm} cm.${a.material==='melamina'?` Color: ${a.color}. Acabado: ${a.acabado}.`:''}\nFoto: ${a.foto_url}\nSucursal: ${a.sucursal_nombre}, ${a.sucursal_direccion}\nPrecio: ARS ${a.precio.toFixed(2)}. Forma de retiro: ${a.forma_retiro}.\nTenés 2 horas dentro de 08:00–20:00 para confirmar desde este aviso: ${url}\nDesde la confirmación tenés 1 día hábil (12 horas de atención) para pagar y retirar en la sucursal. No se cobra al reservar.`};
+      text:`Hola ${a.cliente_nombre}.\n${a.material}, ${a.espesor_mm} mm; ${a.alto_cm} × ${a.ancho_cm} cm.${a.material==='melamina'?` Color: ${a.color}. Acabado: ${a.acabado}.`:''}\nFoto: disponible dentro del aviso en el sistema.\nSucursal: ${a.sucursal_nombre}, ${a.sucursal_direccion}\nPrecio: ARS ${a.precio.toFixed(2)}. Forma de retiro: ${a.forma_retiro}.\nTenés 2 horas dentro de 08:00–20:00 para confirmar desde este aviso: ${url}\nDesde la confirmación tenés 1 día hábil (12 horas de atención) para pagar y retirar en la sucursal. No se cobra al reservar.`};
   }
   async function deliver(id,channel) {
     const existing=repo.deliveries(id).find(e=>e.canal===channel);
