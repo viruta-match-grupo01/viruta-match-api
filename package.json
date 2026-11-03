@@ -13,7 +13,9 @@
     "db:seed": "node --env-file-if-exists=.env src/db-commands.js seed",
     "test": "vitest run",
     "lint": "eslint src tests",
-    "check": "npm run lint && npm test"
+    "check": "npm run lint && npm test",
+    "demo:precios-cp21": "node --env-file-if-exists=.env scripts/actualizar-precio-cp21.mjs",
+    "smtp:verificar": "node --env-file-if-exists=.env scripts/verificar-smtp.mjs"
   },
   "dependencies": {
     "better-sqlite3": "12.11.1",

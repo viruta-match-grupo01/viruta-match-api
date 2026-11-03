@@ -4,6 +4,8 @@ import cors from 'cors';
 import {EventEmitter} from 'node:events';
 import {createDevB} from './index.js';
 import {createAuth} from './auth.js';
+import {createFotosRouter} from './modules/fotos.js';
+import {createUsuariosRouter} from './modules/usuarios.js';
 import {createCalendar} from './calendar.js';
 import {createCaptureChannel,createSmtpChannel,createUnavailableWhatsAppChannel} from './channels.js';
 import {createEquipoRouter,createEquipoTasks} from './modules/equipo.js';
@@ -15,20 +17,24 @@ export function createApp({db,config,bus=new EventEmitter(),clock:customClock,ch
   const capture=createCaptureChannel();
   const channels=customChannels??{correo:config.notificationMode==='smtp'?createSmtpChannel(config.smtp):capture,whatsapp:createUnavailableWhatsAppChannel()};
   const b=createDevB({db,clock,calendar,bus,channels,publicAppUrl:config.publicAppUrl});
-  const context={db,bus,clock,calendar,devB:b};
+  const context={db,bus,clock,calendar,devB:b,config};
   const equipoTasks=equipoTasksFactory(context);
   async function tick(){await equipoTasks.tick();return b.tick();}
   function dispose(){equipoTasks.dispose?.();b.dispose();}
-  const app=express();app.disable('x-powered-by');app.use(express.json({limit:'32kb'}));app.use(cookieParser());
+  const app=express();app.disable('x-powered-by');app.use(cookieParser());
+  app.use(cors({origin:(origin,callback)=>callback(null,!origin||config.uiOrigins.includes(origin)),credentials:true}));
+  const auth=createAuth({db,config});
+  app.use('/api/fotos',auth.authenticate,createFotosRouter({config}));
+  app.use(express.json({limit:'32kb'}));
   app.use((req,res,next)=>{
     const origin=req.headers.origin;
     if(origin&&!config.uiOrigins.includes(origin))return res.status(403).json({error:'ORIGEN_NO_PERMITIDO',message:'Origen no autorizado'});
     if(!['GET','HEAD','OPTIONS'].includes(req.method)&&!req.is('application/json'))return res.status(415).json({error:'JSON_REQUERIDO',message:'Usar application/json'});
     next();
   });
-  app.use(cors({origin:(origin,callback)=>callback(null,!origin||config.uiOrigins.includes(origin)),credentials:true}));
   app.get('/health',(_req,res)=>res.json({ok:true,service:'viruta-match-api',mode:config.production?'production':'development'}));
-  const auth=createAuth({db,config});app.use('/api',auth.authenticate);app.use('/api/auth',auth.router);
+  app.use('/api',auth.authenticate);app.use('/api/auth',auth.router);
+  app.use('/api/usuarios',createUsuariosRouter({db}));
   app.get('/api/entorno',requireUser,(_req,res)=>res.json({demo:config.allowDemo,ahora:clock().toISOString(),avisos:config.notificationMode}));
   if(config.allowDemo) {
     app.use('/api/demo',requireRole('duenio'));

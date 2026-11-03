@@ -84,7 +84,7 @@ describe('Dev A · carga de retazos (RF-01 a RF-07, RF-21)',()=>{
     const f=setup();const op=await login(f.app,4);
     const noPhoto=mdf();delete noPhoto.foto_url;const e=await op.post('/api/retazos').send(noPhoto);expect(e.status).toBe(400);expect(e.body.message).toContain('foto');
     expect((await op.post('/api/retazos').send(mdf({foto_url:'https://externo.invalid/x.jpg'}))).status).toBe(400);
-    const blanca=await op.post('/api/retazos').send(melamina());expect(blanca.body.precio).toBe(8000);   // 0,40 m² × $20.000
+    const blanca=await op.post('/api/retazos').send(melamina());expect(blanca.body.precio).toBe(4640);   // 0,40 m² × $11.600
     const roble=await op.post('/api/retazos').send(melamina({color:'roble'}));expect(roble.body.precio).toBe(10000); // 0,40 m² × $25.000
     const m=await op.post('/api/retazos').send(mdf({alto_cm:40,ancho_cm:60}));expect(m.body.precio).toBe(2880);     // MDF usa su propio precio, sin color
     expect((await op.post('/api/retazos').send(melamina({precio:1}))).status).toBe(400);
@@ -95,8 +95,8 @@ describe('Dev A · carga de retazos (RF-01 a RF-07, RF-21)',()=>{
     const before=await op.post('/api/retazos').send(melamina());
     const put=await owner.put('/api/precios').send({material:'melamina',espesor_mm:18,color:'blanco',precio_m2:30000});expect(put.status).toBe(200);expect(put.body.precio_m2).toBe(30000);
     const after=await op.post('/api/retazos').send(melamina());
-    expect(after.body.precio).toBe(12000);expect(before.body.precio).toBe(8000);
-    expect((await op.get(`/api/retazos/${before.body.id}`)).body.precio).toBe(8000);
+    expect(after.body.precio).toBe(12000);expect(before.body.precio).toBe(4640);
+    expect((await op.get(`/api/retazos/${before.body.id}`)).body.precio).toBe(4640);
     expect(f.db.prepare("SELECT COUNT(*) n FROM precio_m2 WHERE material='melamina' AND color='blanco' AND espesor_mm=18").get().n).toBe(1);
   });
   it('el dueño puede crear precios nuevos y valida el catálogo',async()=>{

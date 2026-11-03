@@ -8,11 +8,12 @@ export function readConfig(env=process.env) {
   if(production&&(!env.UI_ORIGIN||!env.PUBLIC_APP_URL)) throw new Error('UI_ORIGIN y PUBLIC_APP_URL son obligatorios en producción');
   if(production&&(env.ALLOW_DEMO=== 'true'||env.NOTIFICATION_MODE==='capture')) throw new Error('Producción no permite endpoints ni canales de demo');
   return {production,port:Number(env.PORT??3001),host:env.HOST??'127.0.0.1',
-    databasePath:resolve(root,env.DATABASE_PATH??'data/desarrollo.db'),
+    databasePath:resolve(root,env.DATABASE_PATH??'data/desarrollo.db'),uploadDir:resolve(root,env.UPLOAD_DIR??'data/fotos'),
     jwtSecret:env.JWT_SECRET??randomBytes(48).toString('hex'),
     uiOrigins:(env.UI_ORIGIN??'http://localhost:5173,http://127.0.0.1:5173').split(',').map(s=>s.trim()),
-    publicAppUrl:env.PUBLIC_APP_URL??'http://localhost:5173',allowDemo:!production&&env.ALLOW_DEMO==='true',
+    publicAppUrl:env.PUBLIC_APP_URL??'http://localhost:5173',allowDemo:!production&&env.ALLOW_DEMO==='true',allowClientRegistration:!production&&env.ALLOW_CLIENT_REGISTRATION==='true',
     notificationMode:env.NOTIFICATION_MODE??(production?'smtp':'capture'),
+    mercadoPago:{accessToken:env.MP_ACCESS_TOKEN??'',sandbox:env.MP_SANDBOX!=='false',publicAppUrl:env.PUBLIC_APP_URL??'http://localhost:5173'},
     smtp:{host:env.SMTP_HOST,port:Number(env.SMTP_PORT??587),secure:env.SMTP_SECURE==='true',user:env.SMTP_USER,password:env.SMTP_PASSWORD,from:env.SMTP_FROM},
     businessDays:(env.BUSINESS_DAYS??'0,1,2,3,4,5,6').split(',').map(Number),holidays:(env.BUSINESS_HOLIDAYS??'').split(',').filter(Boolean)};
 }
